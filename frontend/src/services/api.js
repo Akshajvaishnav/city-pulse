@@ -17,6 +17,7 @@ export const api = {
   // Issues
   async getIssues(params = {}) {
     const query = new URLSearchParams();
+    if (params.city && params.city !== 'All') query.append('city', params.city);
     if (params.defect_type && params.defect_type !== 'All') query.append('defect_type', params.defect_type);
     if (params.severity && params.severity !== 'All') query.append('severity', params.severity);
     if (params.status && params.status !== 'All') query.append('status', params.status);
@@ -73,16 +74,37 @@ export const api = {
     return true;
   },
 
-  async getMapMarkers() {
-    const response = await fetch(`${API_BASE}/issues/map`);
+  async getMapMarkers(city = null) {
+    const url = city && city !== 'All' ? `${API_BASE}/issues/map?city=${encodeURIComponent(city)}` : `${API_BASE}/issues/map`;
+    const response = await fetch(url);
     if (!response.ok) throw new Error('Failed to fetch map markers');
     return response.json();
   },
 
   // Statistics
-  async getStatistics() {
-    const response = await fetch(`${API_BASE}/statistics`);
+  async getStatistics(city = null) {
+    const url = city && city !== 'All' ? `${API_BASE}/statistics?city=${encodeURIComponent(city)}` : `${API_BASE}/statistics`;
+    const response = await fetch(url);
     if (!response.ok) throw new Error('Failed to fetch city statistics');
+    return response.json();
+  },
+
+  // Future City Readiness & 2070 Scenario
+  async getReadiness(scenario = 'current_trend') {
+    const response = await fetch(`${API_BASE}/readiness?scenario=${encodeURIComponent(scenario)}`);
+    if (!response.ok) throw new Error('Failed to fetch Future City Readiness data');
+    return response.json();
+  },
+
+  async calculateReadiness(payload) {
+    const response = await fetch(`${API_BASE}/readiness/calculate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) throw new Error('Failed to calculate custom readiness scenario');
     return response.json();
   },
 

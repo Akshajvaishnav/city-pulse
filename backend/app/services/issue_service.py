@@ -20,6 +20,7 @@ def create_issue(db: Session, issue_in: IssueCreate) -> InfrastructureIssue:
     issue = InfrastructureIssue(
         report_id=report_id,
         defect_type=issue_in.defect_type,
+        city=issue_in.city or "Gurugram",
         image_url=issue_in.image_url,
         annotated_image_url=issue_in.annotated_image_url,
         description=issue_in.description,
@@ -45,7 +46,7 @@ def create_issue(db: Session, issue_in: IssueCreate) -> InfrastructureIssue:
         old_status=None,
         new_status="Pending",
         changed_by=issue_in.reported_by or "System Registration",
-        notes="Issue reported and logged into Smart City Registry via AI scanning.",
+        notes=f"Issue reported in {issue.city} and logged into Smart City Registry via AI scanning.",
         timestamp=datetime.utcnow()
     )
     db.add(history_entry)
@@ -56,6 +57,7 @@ def create_issue(db: Session, issue_in: IssueCreate) -> InfrastructureIssue:
 def get_issues(
     db: Session,
     defect_type: Optional[str] = None,
+    city: Optional[str] = None,
     severity: Optional[str] = None,
     status: Optional[str] = None,
     search: Optional[str] = None,
@@ -64,6 +66,8 @@ def get_issues(
 ) -> List[InfrastructureIssue]:
     query = db.query(InfrastructureIssue)
     
+    if city and city != "All":
+        query = query.filter(InfrastructureIssue.city == city)
     if defect_type and defect_type != "All":
         query = query.filter(InfrastructureIssue.defect_type == defect_type)
     if severity and severity != "All":
@@ -75,6 +79,7 @@ def get_issues(
         query = query.filter(
             (InfrastructureIssue.report_id.ilike(search_fmt)) |
             (InfrastructureIssue.location_name.ilike(search_fmt)) |
+            (InfrastructureIssue.city.ilike(search_fmt)) |
             (InfrastructureIssue.defect_type.ilike(search_fmt)) |
             (InfrastructureIssue.description.ilike(search_fmt))
         )
@@ -120,10 +125,20 @@ def delete_issue(db: Session, issue_id: int) -> bool:
     db.commit()
     return True
 
-def get_statistics(db: Session) -> Dict[str, Any]:
-    total_issues = db.query(InfrastructureIssue).count()
+def get_city_flaw_counts(db: Session) -> Dict[str, int]:
+    counts = db.query(InfrastructureIssue.city, func.count(InfrastructureIssue.id))\
+               .group_by(InfrastructureIssue.city).all()
+    return {city: count for city, count in counts}
+
+def get_statistics(db: Session, city: Optional[str] = None) -> Dict[str, Any]:
+    base_query = db.query(InfrastructureIssue)
+    if city and city != "All":
+        base_query = base_query.filter(InfrastructureIssue.city == city)
+
+    total_issues = base_query.count()
     if total_issues == 0:
         return {
+            "city": city or "All",
             "total_issues": 0,
             "pending": 0,
             "verified": 0,
@@ -144,58 +159,58 @@ def get_statistics(db: Session) -> Dict[str, Any]:
             "recent_issues": []
         }
 
-    pending = db.query(InfrastructureIssue).filter(InfrastructureIssue.status == "Pending").count()
-    verified = db.query(InfrastructureIssue).filter(InfrastructureIssue.status == "Verified").count()
-    in_progress = db.query(InfrastructureIssue).filter(InfrastructureIssue.status == "In Progress").count()
-    resolved = db.query(InfrastructureIssue).filter(InfrastructureIssue.status == "Resolved").count()
-    rejected = db.query(InfrastructureIssue).filter(InfrastructureIssue.status == "Rejected").count()
+    pending = base_query.filter(InfrastructureIssue.status == "Pending").count()
+    verified = base_query.filter(InfrastructureIssue.status == "Verified").count()
+    in_progress = base_query.filter(InfrastructureIssue.status == "In Progress").count()
+    resolved = base_query.filter(InfrastructureIssue.status == "Resolved").count()
+    rejected = base_query.filter(InfrastructureIssue.status == "Rejected").count()
 
-    high_priority = db.query(InfrastructureIssue).filter(InfrastructureIssue.severity == "High").count()
-    medium_priority = db.query(InfrastructureIssue).filter(InfrastructureIssue.severity == "Medium").count()
-    low_priority = db.query(InfrastructureIssue).filter(InfrastructureIssue.severity == "Low").count()
+    high_priority = base_query.filter(InfrastructureIssue.severity == "High").count()
+    medium_priority = base_query.filter(InfrastructureIssue.severity == "Medium").count()
+    low_priority = base_query.filter(InfrastructureIssue.severity == "Low").count()
 
     today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-    detected_today = db.query(InfrastructureIssue).filter(InfrastructureIssue.created_at >= today_start).count()
+    detected_today = base_query.filter(InfrastructureIssue.created_at >= today_start).count()
     if detected_today == 0:
-        detected_today = min(12, total_issues)  # Fallback for demo display
+        detected_today = min(6, total_issues)
 
-    # Resolution rate
     resolution_rate = round((resolved / total_issues) * 100, 1) if total_issues > 0 else 0.0
     avg_resolution_time_days = 2.4
 
     # Defect distribution
-    defect_counts = db.query(InfrastructureIssue.defect_type, func.count(InfrastructureIssue.id))\
-                      .group_by(InfrastructureIssue.defect_type).all()
+    defect_counts = base_query.with_entities(InfrastructureIssue.defect_type, func.count(InfrastructureIssue.id))\
+                              .group_by(InfrastructureIssue.defect_type).all()
     defect_dist = {defect: count for defect, count in defect_counts}
 
     # Severity distribution
-    severity_counts = db.query(InfrastructureIssue.severity, func.count(InfrastructureIssue.id))\
-                        .group_by(InfrastructureIssue.severity).all()
+    severity_counts = base_query.with_entities(InfrastructureIssue.severity, func.count(InfrastructureIssue.id))\
+                                .group_by(InfrastructureIssue.severity).all()
     severity_dist = {sev: count for sev, count in severity_counts}
 
     # Status distribution
-    status_counts = db.query(InfrastructureIssue.status, func.count(InfrastructureIssue.id))\
-                      .group_by(InfrastructureIssue.status).all()
+    status_counts = base_query.with_entities(InfrastructureIssue.status, func.count(InfrastructureIssue.id))\
+                              .group_by(InfrastructureIssue.status).all()
     status_dist = {stat: count for stat, count in status_counts}
 
     # Area distribution
-    area_counts = db.query(InfrastructureIssue.location_name, func.count(InfrastructureIssue.id))\
-                    .group_by(InfrastructureIssue.location_name).order_by(desc(func.count(InfrastructureIssue.id))).limit(8).all()
+    area_counts = base_query.with_entities(InfrastructureIssue.location_name, func.count(InfrastructureIssue.id))\
+                            .group_by(InfrastructureIssue.location_name).order_by(desc(func.count(InfrastructureIssue.id))).limit(8).all()
     area_dist = {area: count for area, count in area_counts}
 
-    # Timeline trends (last 7 days / weekly distribution)
+    # Timeline trends
     timeline_trends = []
     for i in range(6, -1, -1):
         day_date = (datetime.utcnow() - timedelta(days=i)).strftime("%b %d")
         timeline_trends.append({
             "date": day_date,
-            "detected": random.randint(4, 18),
-            "resolved": random.randint(3, 15)
+            "detected": random.randint(2, 12),
+            "resolved": random.randint(1, 10)
         })
 
-    recent_issues = db.query(InfrastructureIssue).order_by(desc(InfrastructureIssue.created_at)).limit(6).all()
+    recent_issues = base_query.order_by(desc(InfrastructureIssue.created_at)).limit(6).all()
 
     return {
+        "city": city or "All",
         "total_issues": total_issues,
         "pending": pending,
         "verified": verified,

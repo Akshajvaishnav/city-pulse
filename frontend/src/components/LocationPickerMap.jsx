@@ -36,15 +36,19 @@ function RecenterMap({ lat, lng }) {
 }
 
 export default function LocationPickerMap({ latitude, longitude, onLocationChange, onLocationNameChange }) {
-  const [currentLat, setCurrentLat] = useState(latitude || 28.6280);
-  const [currentLng, setCurrentLng] = useState(longitude || 77.3649);
+  const [currentLat, setCurrentLat] = useState(latitude || 28.4595);
+  const [currentLng, setCurrentLng] = useState(longitude || 77.0266);
 
   const presets = [
-    { name: 'Sector 62, Expressway', lat: 28.6280, lng: 77.3649 },
-    { name: 'Sector 18, Commercial Hub', lat: 28.5708, lng: 77.3260 },
-    { name: 'Connaught Place, Central', lat: 28.6315, lng: 77.2167 },
-    { name: 'Sector 15, North Zone', lat: 28.7180, lng: 77.1350 },
-    { name: 'Cyber Hub, Tech District', lat: 28.4986, lng: 77.0878 },
+    { name: 'Cyber Hub, Gurugram', lat: 28.4986, lng: 77.0878 },
+    { name: 'Golf Course Rd, Gurugram', lat: 28.4721, lng: 77.0984 },
+    { name: 'Sector 29, Gurugram', lat: 28.4682, lng: 77.0632 },
+    { name: 'Connaught Place, Delhi', lat: 28.6315, lng: 77.2167 },
+    { name: 'Sector 62, Noida', lat: 28.6280, lng: 77.3649 },
+    { name: 'Outer Ring Rd, Bengaluru', lat: 12.9352, lng: 77.6944 },
+    { name: 'Whitefield, Bengaluru', lat: 12.9698, lng: 77.7499 },
+    { name: 'Patia, Bhubaneswar', lat: 20.3533, lng: 85.8189 },
+    { name: 'Infocity, Bhubaneswar', lat: 20.3588, lng: 85.8132 }
   ];
 
   const handleSelect = (lat, lng, name = null) => {

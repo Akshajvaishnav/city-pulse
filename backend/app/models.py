@@ -15,6 +15,7 @@ class InfrastructureIssue(Base):
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
     location_name = Column(String(255), nullable=False)
+    city = Column(String(50), nullable=False, default="Gurugram", index=True)  # Gurugram, Delhi, Noida, Bengaluru, Bhubaneswar
     severity = Column(String(20), nullable=False, default="Medium")  # High, Medium, Low
     confidence = Column(Float, nullable=False, default=0.85)  # 0.0 - 1.0 (or percentage)
     status = Column(String(30), nullable=False, default="Pending")  # Pending, Verified, In Progress, Resolved, Rejected

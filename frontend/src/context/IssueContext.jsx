@@ -4,8 +4,10 @@ import { api } from '../services/api';
 const IssueContext = createContext();
 
 export function IssueProvider({ children }) {
+  const [selectedCity, setSelectedCity] = useState('Gurugram'); // Default to Gurugram as primary demo city
   const [issues, setIssues] = useState([]);
   const [statistics, setStatistics] = useState(null);
+  const [readinessData, setReadinessData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [toasts, setToasts] = useState([]);
   const [selectedIssueId, setSelectedIssueId] = useState(null);
@@ -26,7 +28,11 @@ export function IssueProvider({ children }) {
   const fetchIssues = useCallback(async (filters = {}) => {
     setLoading(true);
     try {
-      const data = await api.getIssues(filters);
+      const activeFilters = { ...filters };
+      if (selectedCity && selectedCity !== 'All' && !activeFilters.city) {
+        activeFilters.city = selectedCity;
+      }
+      const data = await api.getIssues(activeFilters);
       setIssues(data);
     } catch (err) {
       console.error(err);
@@ -34,12 +40,22 @@ export function IssueProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, [addToast]);
+  }, [selectedCity, addToast]);
 
-  const fetchStatistics = useCallback(async () => {
+  const fetchStatistics = useCallback(async (city = null) => {
     try {
-      const stats = await api.getStatistics();
+      const targetCity = city !== null ? city : selectedCity;
+      const stats = await api.getStatistics(targetCity);
       setStatistics(stats);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [selectedCity]);
+
+  const fetchReadiness = useCallback(async (scenario = 'current_trend') => {
+    try {
+      const data = await api.getReadiness(scenario);
+      setReadinessData(data);
     } catch (err) {
       console.error(err);
     }
@@ -48,7 +64,8 @@ export function IssueProvider({ children }) {
   const refreshAll = useCallback(() => {
     fetchIssues();
     fetchStatistics();
-  }, [fetchIssues, fetchStatistics]);
+    fetchReadiness();
+  }, [fetchIssues, fetchStatistics, fetchReadiness]);
 
   useEffect(() => {
     refreshAll();
@@ -57,8 +74,11 @@ export function IssueProvider({ children }) {
   return (
     <IssueContext.Provider
       value={{
+        selectedCity,
+        setSelectedCity,
         issues,
         statistics,
+        readinessData,
         loading,
         toasts,
         selectedIssueId,
@@ -69,6 +89,8 @@ export function IssueProvider({ children }) {
         removeToast,
         fetchIssues,
         fetchStatistics,
+        fetchReadiness,
+        setReadinessData,
         refreshAll,
       }}
     >

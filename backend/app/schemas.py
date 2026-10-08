@@ -35,6 +35,7 @@ class StatusHistoryResponse(BaseModel):
 
 class IssueCreate(BaseModel):
     defect_type: str
+    city: str = "Gurugram"
     image_url: str
     annotated_image_url: Optional[str] = None
     description: Optional[str] = None
@@ -55,6 +56,7 @@ class IssueStatusUpdate(BaseModel):
 
 class IssueUpdate(BaseModel):
     defect_type: Optional[str] = None
+    city: Optional[str] = None
     description: Optional[str] = None
     severity: Optional[str] = None
     location_name: Optional[str] = None
@@ -67,6 +69,7 @@ class IssueResponse(BaseModel):
     id: int
     report_id: str
     defect_type: str
+    city: str = "Gurugram"
     image_url: str
     annotated_image_url: Optional[str] = None
     description: Optional[str] = None
@@ -92,6 +95,7 @@ class IssueMapItem(BaseModel):
     id: int
     report_id: str
     defect_type: str
+    city: str = "Gurugram"
     latitude: float
     longitude: float
     location_name: str
@@ -106,6 +110,7 @@ class IssueMapItem(BaseModel):
         from_attributes = True
 
 class StatisticsResponse(BaseModel):
+    city: Optional[str] = "All"
     total_issues: int
     pending: int
     verified: int
@@ -124,6 +129,57 @@ class StatisticsResponse(BaseModel):
     area_distribution: Dict[str, int]
     timeline_trends: List[Dict[str, Any]]
     recent_issues: List[IssueResponse]
+
+# Future Readiness & 2070 Scenario Schemas
+class PillarWeights(BaseModel):
+    infrastructure: float = 0.25
+    sustainability: float = 0.20
+    mobility: float = 0.15
+    technology: float = 0.15
+    resilience: float = 0.15
+    planning: float = 0.10
+
+class IndicatorDetail(BaseModel):
+    name: str
+    score: float
+    benchmark: str
+    status: str
+
+class CityPillars(BaseModel):
+    infrastructure: float
+    sustainability: float
+    mobility: float
+    technology: float
+    resilience: float
+    planning: float
+
+class CityReadinessProfile(BaseModel):
+    city: str
+    role_description: str
+    center_coords: List[float]
+    pillars: CityPillars
+    readiness_score: float
+    infrastructure_flaw_count: int
+    infrastructure_health_score: float
+    strengths: List[str]
+    challenges: List[str]
+    indicators_breakdown: List[IndicatorDetail]
+    projections: Dict[str, List[float]]  # scenario_name -> [score_2026, 2035, 2045, 2055, 2065, 2070]
+
+class ReadinessComparisonResponse(BaseModel):
+    years: List[int] = [2026, 2035, 2045, 2055, 2065, 2070]
+    active_scenario: str
+    scenarios: List[str] = ["conservative", "current_trend", "accelerated"]
+    weights: PillarWeights
+    cities: Dict[str, CityReadinessProfile]
+    comparison_table: List[Dict[str, Any]]
+    insights: Dict[str, Any]
+    disclaimer: str
+
+class CalculateReadinessRequest(BaseModel):
+    scenario: str = "current_trend"  # conservative, current_trend, accelerated
+    target_year: int = 2070
+    weights: Optional[PillarWeights] = None
 
 class LoginRequest(BaseModel):
     username: str

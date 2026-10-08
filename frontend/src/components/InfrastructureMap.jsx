@@ -102,6 +102,24 @@ export default function InfrastructureMap({
   const { issues: contextIssues, setSelectedIssueId } = useIssues();
   const rawIssues = propIssues || contextIssues || [];
 
+  // City Selector synced with Context
+  const { selectedCity, setSelectedCity } = useIssues();
+
+  const cityCoordinates = {
+    'Gurugram': [28.4595, 77.0266],
+    'Delhi': [28.6139, 77.2090],
+    'Noida': [28.5708, 77.3260],
+    'Bengaluru': [12.9716, 77.5946],
+    'Bhubaneswar': [20.2961, 85.8245]
+  };
+
+  const currentMapCenter = useMemo(() => {
+    if (selectedCity && selectedCity !== 'All' && cityCoordinates[selectedCity]) {
+      return cityCoordinates[selectedCity];
+    }
+    return defaultCenter;
+  }, [selectedCity, defaultCenter]);
+
   // Filter States
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('All');
@@ -131,11 +149,15 @@ export default function InfrastructureMap({
   // Dynamic Multi-Criteria Filtering
   const filteredMarkers = useMemo(() => {
     return rawIssues.filter((issue) => {
+      const matchesCity =
+        !selectedCity || selectedCity === 'All' || issue.city?.toLowerCase() === selectedCity.toLowerCase();
+
       const matchesSearch =
         !searchTerm ||
         issue.report_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         issue.location_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        issue.defect_type?.toLowerCase().includes(searchTerm.toLowerCase());
+        issue.defect_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        issue.city?.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesType = selectedType === 'All' || issue.defect_type === selectedType;
       const matchesSeverity = selectedSeverity === 'All' || issue.severity === selectedSeverity;
@@ -149,18 +171,34 @@ export default function InfrastructureMap({
         matchesDate = issueDate >= cutoff;
       }
 
-      return matchesSearch && matchesType && matchesSeverity && matchesStatus && matchesDate;
+      return matchesCity && matchesSearch && matchesType && matchesSeverity && matchesStatus && matchesDate;
     });
-  }, [rawIssues, searchTerm, selectedType, selectedSeverity, selectedStatus, dateFilter]);
+  }, [rawIssues, selectedCity, searchTerm, selectedType, selectedSeverity, selectedStatus, dateFilter]);
 
   return (
     <div className="w-full space-y-4 font-sans">
       {/* Search & Filter Panel */}
       {showFilters && (
         <div className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800 backdrop-blur-md space-y-3 shadow-xl">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+            {/* City Selector */}
+            <div>
+              <select
+                value={selectedCity || 'Gurugram'}
+                onChange={(e) => setSelectedCity(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl bg-cyan-950/40 border border-cyan-500/40 text-cyan-200 text-xs font-bold focus:outline-none focus:border-cyan-400 transition cursor-pointer"
+              >
+                <option value="All">🌐 All Cities</option>
+                <option value="Gurugram">📍 Gurugram (Primary)</option>
+                <option value="Delhi">📍 Delhi (Capital)</option>
+                <option value="Noida">📍 Noida (Planned)</option>
+                <option value="Bengaluru">📍 Bengaluru (Tech Hub)</option>
+                <option value="Bhubaneswar">📍 Bhubaneswar (Planned)</option>
+              </select>
+            </div>
+
             {/* Search */}
-            <div className="relative lg:col-span-1">
+            <div className="relative">
               <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
@@ -260,7 +298,7 @@ export default function InfrastructureMap({
       {/* Main Map Container */}
       <div className="w-full relative rounded-2xl overflow-hidden border border-slate-800 shadow-2xl" style={{ height }}>
         <MapContainer
-          center={defaultCenter}
+          center={currentMapCenter}
           zoom={12}
           scrollWheelZoom={true}
           className="w-full h-full"
@@ -272,7 +310,7 @@ export default function InfrastructureMap({
           />
 
           {/* Dynamic Boundary & Center Auto-fit Controller */}
-          <MapBoundsController markers={filteredMarkers} />
+          <MapBoundsController markers={filteredMarkers} center={selectedCity !== 'All' ? currentMapCenter : null} />
 
           {/* Render Dynamic Infrastructure Markers */}
           {filteredMarkers.map((issue) => (

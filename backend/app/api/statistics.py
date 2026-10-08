@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends
+from typing import Optional
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from ..database import get_db
 from ..schemas import StatisticsResponse
@@ -7,7 +8,10 @@ from ..services import issue_service
 router = APIRouter(prefix="/statistics", tags=["City Analytics"])
 
 @router.get("", response_model=StatisticsResponse)
-def get_city_statistics(db: Session = Depends(get_db)):
+def get_city_statistics(
+    city: Optional[str] = Query(None, description="Filter stats by city"),
+    db: Session = Depends(get_db)
+):
     """
     Returns aggregated city-wide infrastructure monitoring metrics:
     - Status counts (Pending, In-Progress, Resolved)
@@ -16,4 +20,5 @@ def get_city_statistics(db: Session = Depends(get_db)):
     - Hotspot locations
     - Historical trend analytics
     """
-    return issue_service.get_statistics(db)
+    return issue_service.get_statistics(db, city=city)
+

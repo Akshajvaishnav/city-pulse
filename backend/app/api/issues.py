@@ -32,12 +32,13 @@ def create_new_issue(
 
 @router.get("", response_model=List[IssueResponse])
 def list_issues(
+    city: Optional[str] = Query(None, description="Filter by city: Gurugram, Delhi, Noida, Bengaluru, Bhubaneswar"),
     defect_type: Optional[str] = Query(None, description="Filter by defect type"),
     severity: Optional[str] = Query(None, description="Filter by severity: High, Medium, Low"),
     status: Optional[str] = Query(None, description="Filter by status: Pending, Verified, In Progress, Resolved, Rejected"),
     search: Optional[str] = Query(None, description="Search term for location, ID, or description"),
     skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=500),
+    limit: int = Query(200, ge=1, le=500),
     db: Session = Depends(get_db)
 ):
     """
@@ -45,6 +46,7 @@ def list_issues(
     """
     return issue_service.get_issues(
         db=db,
+        city=city,
         defect_type=defect_type,
         severity=severity,
         status=status,
@@ -54,16 +56,20 @@ def list_issues(
     )
 
 @router.get("/map", response_model=List[IssueMapItem])
-def get_map_markers(db: Session = Depends(get_db)):
+def get_map_markers(
+    city: Optional[str] = Query(None, description="Filter by city"),
+    db: Session = Depends(get_db)
+):
     """
     Lightweight coordinates and metadata endpoint for interactive Leaflet map rendering.
     """
-    issues = issue_service.get_issues(db, limit=500)
+    issues = issue_service.get_issues(db, city=city, limit=500)
     return [
         IssueMapItem(
             id=i.id,
             report_id=i.report_id,
             defect_type=i.defect_type,
+            city=i.city or "Gurugram",
             latitude=i.latitude,
             longitude=i.longitude,
             location_name=i.location_name,

@@ -47,12 +47,15 @@ ChartJS.register(
 );
 
 export default function DashboardPage({ setActiveTab }) {
-  const { issues, statistics, loading, refreshAll, setSelectedIssueId } = useIssues();
+  const { issues, statistics, loading, refreshAll, setSelectedIssueId, selectedCity, setSelectedCity, readinessData } = useIssues();
   const [filterType, setFilterType] = useState('All');
 
   const filteredIssues = filterType === 'All'
     ? issues
     : issues.filter((i) => i.defect_type === filterType);
+
+  const activeCityReadiness = readinessData?.cities?.[selectedCity !== 'All' ? selectedCity : 'Gurugram'] ||
+    readinessData?.cities?.['Gurugram'];
 
   // Chart Data: Defect Distribution
   const defectLabels = statistics?.defect_distribution
@@ -153,11 +156,16 @@ export default function DashboardPage({ setActiveTab }) {
       {/* Top Banner */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
         <div>
-          <span className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider">
-            City Operations Command
-          </span>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider">
+              City Operations Command
+            </span>
+            <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/30 font-bold">
+              Active: {selectedCity || 'Gurugram'}
+            </span>
+          </div>
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-            Infrastructure Monitoring Dashboard
+            Infrastructure & Future City Command
           </h1>
         </div>
 
@@ -172,6 +180,14 @@ export default function DashboardPage({ setActiveTab }) {
           </button>
 
           <button
+            onClick={() => setActiveTab('readiness')}
+            className="px-3.5 py-2.5 rounded-xl bg-cyan-950/70 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-900/50 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+          >
+            <span>2070 Projections</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </button>
+
+          <button
             onClick={() => setActiveTab('report')}
             className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-bold shadow-lg glow-cyan flex items-center gap-2 transition cursor-pointer"
           >
@@ -180,6 +196,49 @@ export default function DashboardPage({ setActiveTab }) {
           </button>
         </div>
       </div>
+
+      {/* Future City Readiness 2070 Teaser Card */}
+      {activeCityReadiness && (
+        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-cyan-950/50 via-slate-900/90 to-blue-950/40 border border-cyan-500/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                2070 SCENARIO READINESS
+              </span>
+              <span className="text-xs text-slate-400 font-semibold">
+                {activeCityReadiness.city_name} Trajectory
+              </span>
+            </div>
+            <h3 className="text-base sm:text-lg font-bold text-white">
+              Projected Future Readiness Score:{' '}
+              <span className="text-cyan-400 font-mono font-black text-xl">
+                {activeCityReadiness.projections?.[2070] || activeCityReadiness.current_readiness_score}/100
+              </span>
+              <span className="text-xs font-normal text-slate-400 ml-2">
+                (Baseline 2026: {activeCityReadiness.current_readiness_score}/100)
+              </span>
+            </h3>
+            <p className="text-xs text-slate-400 max-w-xl">
+              Modelled using 6 normalized infrastructure and sustainability pillars with active flaw penalty.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              onClick={() => setActiveTab('compare')}
+              className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs font-bold transition cursor-pointer"
+            >
+              Compare 5 Cities
+            </button>
+            <button
+              onClick={() => setActiveTab('readiness')}
+              className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-black transition cursor-pointer shadow-md glow-cyan"
+            >
+              Open 2070 Simulator
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">

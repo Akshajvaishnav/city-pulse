@@ -20,19 +20,20 @@ import {
 } from 'lucide-react';
 
 export default function ReportIssuePage({ setActiveTab, prefilledData = null }) {
-  const { refreshAll, addToast } = useIssues();
+  const { refreshAll, addToast, selectedCity } = useIssues();
   const fileInputRef = useRef(null);
 
   // Form State
+  const [city, setCity] = useState(prefilledData?.city || (selectedCity !== 'All' ? selectedCity : 'Gurugram'));
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(prefilledData?.image_url || null);
   const [annotatedPreview, setAnnotatedPreview] = useState(prefilledData?.annotated_image_url || null);
   const [defectType, setDefectType] = useState(prefilledData?.defect_type || 'Pothole');
   const [severity, setSeverity] = useState(prefilledData?.severity || 'High');
   const [confidence, setConfidence] = useState(prefilledData?.confidence || 0.92);
-  const [locationName, setLocationName] = useState(prefilledData?.location_name || 'Sector 62, Noida');
-  const [latitude, setLatitude] = useState(prefilledData?.latitude || 28.6280);
-  const [longitude, setLongitude] = useState(prefilledData?.longitude || 77.3649);
+  const [locationName, setLocationName] = useState(prefilledData?.location_name || 'Cyber Hub, DLF Phase 2');
+  const [latitude, setLatitude] = useState(prefilledData?.latitude || 28.4986);
+  const [longitude, setLongitude] = useState(prefilledData?.longitude || 77.0878);
   const [description, setDescription] = useState(prefilledData?.description || '');
   const [reportedBy, setReportedBy] = useState('');
   const [reporterContact, setReporterContact] = useState('');
@@ -129,10 +130,11 @@ export default function ReportIssuePage({ setActiveTab, prefilledData = null }) 
       }
 
       const payload = {
+        city: city || 'Gurugram',
         defect_type: defectType,
         image_url: finalImageUrl || '/uploads/pothole_sector62.jpg',
         annotated_image_url: finalAnnotatedUrl,
-        description: description || `Infrastructure defect reported: ${defectType} at ${locationName}`,
+        description: description || `Infrastructure defect reported: ${defectType} in ${city} at ${locationName}`,
         latitude: parseFloat(latitude),
         longitude: parseFloat(longitude),
         location_name: locationName,
@@ -323,7 +325,39 @@ export default function ReportIssuePage({ setActiveTab, prefilledData = null }) 
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="md:col-span-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
+                Target City / Municipality
+              </label>
+              <select
+                value={city}
+                onChange={(e) => {
+                  const newCity = e.target.value;
+                  setCity(newCity);
+                  const cityCoords = {
+                    'Gurugram': { lat: 28.4595, lng: 77.0266, loc: 'Cyber Hub / MG Road, Gurugram' },
+                    'Delhi': { lat: 28.6139, lng: 77.2090, loc: 'Connaught Place, Central Delhi' },
+                    'Noida': { lat: 28.5708, lng: 77.3260, loc: 'Sector 62, Noida' },
+                    'Bengaluru': { lat: 12.9716, lng: 77.5946, loc: 'Outer Ring Road, Bengaluru' },
+                    'Bhubaneswar': { lat: 20.2961, lng: 85.8245, loc: 'Patia / Infocity, Bhubaneswar' }
+                  };
+                  if (cityCoords[newCity]) {
+                    setLatitude(cityCoords[newCity].lat);
+                    setLongitude(cityCoords[newCity].lng);
+                    setLocationName(cityCoords[newCity].loc);
+                  }
+                }}
+                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-cyan-500/40 text-cyan-300 text-sm font-bold focus:outline-none focus:border-cyan-400 transition cursor-pointer"
+              >
+                <option value="Gurugram">Gurugram (Primary Demo City)</option>
+                <option value="Delhi">Delhi (Capital Metropolitan)</option>
+                <option value="Noida">Noida (Satellite City)</option>
+                <option value="Bengaluru">Bengaluru (Tech Metropolis)</option>
+                <option value="Bhubaneswar">Bhubaneswar (Planned Smart City)</option>
+              </select>
+            </div>
+
+            <div className="md:col-span-2">
               <label className="block text-xs font-semibold text-slate-300 mb-1">
                 Landmark / Sector / Area Name
               </label>
@@ -332,7 +366,7 @@ export default function ReportIssuePage({ setActiveTab, prefilledData = null }) 
                 required
                 value={locationName}
                 onChange={(e) => setLocationName(e.target.value)}
-                placeholder="e.g. Sector 62, Noida Expressway Near Metro"
+                placeholder="e.g. Cyber Hub / Sector 29 / MG Road"
                 className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-none focus:border-cyan-500 transition"
               />
             </div>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useIssues } from '../context/IssueContext';
 import {
   Activity,
   Shield,
@@ -12,20 +13,25 @@ import {
   LogIn,
   LogOut,
   Menu,
-  X
+  X,
+  TrendingUp,
+  GitCompare,
+  BookOpen
 } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab }) {
   const { user, isAdmin, logout } = useAuth();
+  const { selectedCity, setSelectedCity } = useIssues();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navItems = [
-    { id: 'landing', label: 'Home', icon: Layers },
     { id: 'dashboard', label: 'Dashboard', icon: Activity },
+    { id: 'map', label: 'Leaflet Map', icon: MapPin },
     { id: 'detect', label: 'AI Scanner', icon: Camera },
-    { id: 'map', label: 'City Map', icon: MapPin },
-    { id: 'issues', label: 'Issue Management', icon: Sliders },
-    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+    { id: 'readiness', label: 'Readiness 2070', icon: TrendingUp },
+    { id: 'compare', label: 'Compare Cities', icon: GitCompare },
+    { id: 'methodology', label: 'Methodology', icon: BookOpen },
+    { id: 'issues', label: 'Issues', icon: Sliders },
   ];
 
   const handleNav = (id) => {
@@ -40,28 +46,45 @@ export default function Navbar({ activeTab, setActiveTab }) {
           {/* Brand Logo */}
           <div
             onClick={() => handleNav('landing')}
-            className="flex items-center gap-3 cursor-pointer group"
+            className="flex items-center gap-3 cursor-pointer group shrink-0"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 via-blue-600 to-indigo-600 p-0.5 flex items-center justify-center shadow-lg glow-cyan group-hover:scale-105 transition-transform">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-600 via-blue-600 to-indigo-600 p-0.5 flex items-center justify-center shadow-lg glow-cyan group-hover:scale-105 transition-transform">
               <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                <Shield className="w-5 h-5 text-cyan-400" />
+                <Shield className="w-4.5 h-4.5 text-cyan-400" />
               </div>
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-base font-extrabold text-white tracking-tight">SmartCity</span>
-                <span className="text-xs font-mono font-bold px-1.5 py-0.2 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded">
-                  AI DEFECT
+                <span className="text-sm font-extrabold text-white tracking-tight">SmartCity</span>
+                <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded">
+                  2070 PLATFORM
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400 tracking-wider uppercase font-medium">
-                Infrastructure Monitoring System
+              <p className="text-[9px] text-slate-400 tracking-wider uppercase font-medium">
+                Infrastructure & Future Readiness
               </p>
             </div>
           </div>
 
+          {/* City Quick-Selector Pill */}
+          <div className="hidden md:flex items-center gap-1 bg-slate-900/90 border border-slate-800 rounded-xl px-2.5 py-1 text-xs">
+            <MapPin className="w-3.5 h-3.5 text-cyan-400" />
+            <select
+              value={selectedCity || 'Gurugram'}
+              onChange={(e) => setSelectedCity(e.target.value)}
+              className="bg-transparent text-slate-200 text-xs font-bold focus:outline-none cursor-pointer"
+            >
+              <option value="All" className="bg-slate-950 text-slate-200">🌐 All Cities</option>
+              <option value="Gurugram" className="bg-slate-950 text-slate-200">📍 Gurugram (Primary)</option>
+              <option value="Delhi" className="bg-slate-950 text-slate-200">📍 Delhi</option>
+              <option value="Noida" className="bg-slate-950 text-slate-200">📍 Noida</option>
+              <option value="Bengaluru" className="bg-slate-950 text-slate-200">📍 Bengaluru (Tech)</option>
+              <option value="Bhubaneswar" className="bg-slate-950 text-slate-200">📍 Bhubaneswar (Planned)</option>
+            </select>
+          </div>
+
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden xl:flex items-center gap-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -69,13 +92,13 @@ export default function Navbar({ activeTab, setActiveTab }) {
                 <button
                   key={item.id}
                   onClick={() => handleNav(item.id)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
                     isActive
                       ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 shadow-sm'
                       : 'text-slate-400 hover:text-white hover:bg-slate-900/60'
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-3.5 h-3.5" />
                   <span>{item.label}</span>
                 </button>
               );

@@ -16,6 +16,9 @@ import InfrastructureMapPage from './pages/InfrastructureMapPage';
 import IssueManagementPage from './pages/IssueManagementPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import LoginPage from './pages/LoginPage';
+import FutureReadinessPage from './pages/FutureReadinessPage';
+import CompareCitiesPage from './pages/CompareCitiesPage';
+import MethodologyPage from './pages/MethodologyPage';
 
 function MainApp() {
   const [activeTab, setActiveTab] = useState('landing');
@@ -47,6 +50,12 @@ function MainApp() {
         return <IssueManagementPage setActiveTab={setActiveTab} />;
       case 'analytics':
         return <AnalyticsPage />;
+      case 'readiness':
+        return <FutureReadinessPage setActiveTab={setActiveTab} />;
+      case 'compare':
+        return <CompareCitiesPage setActiveTab={setActiveTab} />;
+      case 'methodology':
+        return <MethodologyPage />;
       case 'login':
         return <LoginPage setActiveTab={setActiveTab} />;
       default:
