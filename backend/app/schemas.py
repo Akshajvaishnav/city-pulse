@@ -96,8 +96,10 @@ class IssueMapItem(BaseModel):
     longitude: float
     location_name: str
     severity: str
+    confidence: float = 0.85
     status: str
     image_url: str
+    description: Optional[str] = None
     created_at: datetime
 
     class Config:

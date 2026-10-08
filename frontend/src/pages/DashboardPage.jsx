@@ -4,7 +4,7 @@ import StatsCard from '../components/StatsCard';
 import StatusBadge from '../components/StatusBadge';
 import SeverityBadge from '../components/SeverityBadge';
 import DefectIcon from '../components/DefectIcon';
-import LeafletMap from '../components/LeafletMap';
+import InfrastructureMap from '../components/InfrastructureMap';
 import {
   Activity,
   Clock,
@@ -307,7 +307,7 @@ export default function DashboardPage({ setActiveTab }) {
             </button>
           </div>
 
-          <LeafletMap issues={filteredIssues} height="420px" />
+          <InfrastructureMap issues={filteredIssues} height="420px" showFilters={false} showLegend={true} />
         </div>
 
         {/* Right 5 cols: Recent Reports */}

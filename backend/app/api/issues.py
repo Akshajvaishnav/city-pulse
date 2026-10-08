@@ -68,8 +68,10 @@ def get_map_markers(db: Session = Depends(get_db)):
             longitude=i.longitude,
             location_name=i.location_name,
             severity=i.severity,
+            confidence=i.confidence,
             status=i.status,
             image_url=i.image_url,
+            description=i.description,
             created_at=i.created_at
         )
         for i in issues
