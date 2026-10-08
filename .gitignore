@@ -1,0 +1,24 @@
+# Python
+backend/venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+backend/smartcity.db
+
+# Node / Frontend
+frontend/node_modules/
+frontend/dist/
+node_modules/
+dist/
+
+# Logs & Env
+*.log
+.env
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
