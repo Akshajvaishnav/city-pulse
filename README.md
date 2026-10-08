@@ -4,6 +4,19 @@ A modern full-stack web application designed for smart cities and municipal corp
 
 ---
 
+## 🌐 Quick Localhost Access Links
+
+When running locally, access the system through these endpoints:
+
+- 🖥️ **Web Dashboard & Application**: [http://localhost:5173](http://localhost:5173)
+- ⚙️ **Backend REST API**: [http://localhost:8000](http://localhost:8000)
+- 📖 **Interactive Swagger API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- 📑 **ReDoc API Documentation**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
+- 🗺️ **Live GIS Map Telemetry Feed**: [http://localhost:8000/api/issues/map](http://localhost:8000/api/issues/map)
+- 📊 **City Analytics KPI Endpoint**: [http://localhost:8000/api/statistics](http://localhost:8000/api/statistics)
+
+---
+
 ## 🚀 Key Features
 
 - **End-to-End Operational Lifecycle**:
