@@ -1,6 +1,12 @@
-# 🏙️ SmartCity Infrastructure Flaw Detection & Incident Lifecycle System
+# 🏙️ SmartCity: Multi-City Infrastructure Monitoring & Future City Readiness Platform (2026 → 2070 Scenario Analysis)
 
-A modern full-stack web application designed for smart cities and municipal corporations to detect, classify, prioritize, track, and resolve urban infrastructure defects (potholes, damaged roads, broken street lights, garbage overflows, water leaks, and damaged traffic signage) using **Computer Vision (AI)**, **Geospatial GIS Mapping**, and **Municipal Workflow Automation**.
+A full-stack municipal intelligence platform that combines **Computer Vision Defect Detection**, **Leaflet Geospatial GIS Telemetry**, and **Predictive Future City Readiness Modeling toward 2070** across five key cities:
+
+1. **Gurugram** — Primary demonstration city with simulated defect reports across major cyber, commercial, and residential sectors.
+2. **Bengaluru** — Established technology metropolitan city with leading digital/IoT readiness and suburban traffic/catchment challenges.
+3. **Bhubaneswar** — High-potential planned smart city with high urban expansion headroom and disaster resilience.
+4. **Delhi** — National capital metropolitan region with dense mass transit networks.
+5. **Noida** — Planned gridded satellite city with expressway infrastructure.
 
 ---
 
@@ -10,6 +16,7 @@ When running locally, access the system through these endpoints:
 
 - 🖥️ **Web Dashboard & Application**: [http://localhost:5173](http://localhost:5173)
 - ⚙️ **Backend REST API**: [http://localhost:8000](http://localhost:8000)
+- 🔮 **Future City Readiness Engine**: [http://localhost:8000/api/readiness](http://localhost:8000/api/readiness)
 - 📖 **Interactive Swagger API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
 - 📑 **ReDoc API Documentation**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
 - 🗺️ **Live GIS Map Telemetry Feed**: [http://localhost:8000/api/issues/map](http://localhost:8000/api/issues/map)
@@ -19,17 +26,35 @@ When running locally, access the system through these endpoints:
 
 ## 🚀 Key Features
 
+### 1. Future City Readiness (2070 Scenario Analysis)
+- **Six Transparent Pillar Scores**:
+  - **Infrastructure Health (25%)**: Road quality, defect density, active flaw penalty.
+  - **Sustainability (20%)**: Green canopy, waste circularity, clean energy.
+  - **Mobility & Transit (15%)**: Public transit coverage, congestion index, walkability.
+  - **Technology Readiness (15%)**: Smart IoT sensors, digital civic services, AI automation.
+  - **Climate Resilience (15%)**: Urban flood management, storm preparedness, drainage capacity.
+  - **Urban Planning (10%)**: Master plan zoning adherence, expansion headroom.
+- **Configurable Weighting Engine**: Sliders allow users to rebalance weights and dynamically recalculate projections.
+- **2026 → 2070 Projections**: Logarithmic scenario modeling across 2026, 2035, 2045, 2055, 2065, and 2070.
+- **Three Policy Scenarios**:
+  - **Conservative**: Slower capital improvement ($\alpha = 0.35$).
+  - **Current-Trend**: Consistent with historical trajectory ($\alpha = 0.55$).
+  - **Accelerated Development**: High investment in green tech, transit, and resilience ($\alpha = 0.75$).
+- **5-City Comparison & Head-to-Head Duel**: Comparative matrix and metric duels between any two selected cities.
+- **Academic Methodology**: Full transparency on mathematical formulas, normalization methods, and demonstration data limitations.
+- **Strict Compliance Notice**: Projections are framed as *"Projected Future Readiness"* with clear analytical disclaimers.
+
+### 2. Core Infrastructure Flaw Detection & Geospatial Telemetry
 - **End-to-End Operational Lifecycle**:
-  $$\text{Detect} \longrightarrow \text{Locate} \longrightarrow \text{Classify} \longrightarrow \text{Prioritize} \longrightarrow \text{Report} \longrightarrow \text{Monitor} \longrightarrow \text{Resolve}$$
+  $$\text{Detect} \longrightarrow \text{Locate} \longrightarrow \text{Classify} \longrightarrow \text{Prioritize} \longrightarrow \text{Report} \longrightarrow \text{Monitor} \longrightarrow \text{Project 2070}$$
 - **AI Computer Vision Defect Scanner**:
   - Image defect detection with bounding box localization overlays.
   - Automatic confidence score calculation, defect classification, and severity urgency scoring.
-  - Side-by-side view: **Original Photograph** vs **AI-Annotated Overlay**.
-  - Modular AI architecture with pluggable `BaseDefectDetector` ready for Ultralytics YOLOv8/YOLOv11 model weights.
-- **Interactive Geospatial Infrastructure Map**:
-  - Full-featured Leaflet GIS map with color-coded severity markers (🔴 High/Pulsating, 🟡 Medium, 🟢 Low/Resolved).
-  - Rich interactive popups with defect thumbnails, report reference IDs, and direct dossier links.
-  - Multi-criteria filtering by flaw type, severity, workflow status, and sector search.
+  - Pluggable `BaseDefectDetector` ready for Ultralytics YOLOv8/YOLOv11 model weights.
+- **Interactive Multi-City Leaflet GIS Map**:
+  - Leaflet + OpenStreetMap engine with city quick-selector that flies to city coordinates.
+  - Markers with pulsating high-severity indicators and defect dossiers.
+  - Multi-criteria filtering by flaw type, severity, workflow status, and city.
 - **Citizen & Inspector Defect Reporting**:
   - Image upload with instant AI Pre-Scan (auto-suggests flaw type, confidence, severity, and incident description).
   - Interactive click-to-pin location selector map, preset city hotspots, and live GPS geolocation.
