@@ -12,10 +12,14 @@ A full-stack municipal intelligence platform that combines **Computer Vision Def
 
 ## 🌐 Quick Localhost Access Links
 
-When running locally, access the system through these endpoints:
+When running locally, access the platform through these live endpoints:
 
-- 🖥️ **Web Dashboard & Application**: [http://localhost:5173](http://localhost:5173)
+- 🖥️ **Web Dashboard & Application (Frontend)**: [http://localhost:5173](http://localhost:5173)
 - ⚙️ **Backend REST API**: [http://localhost:8000](http://localhost:8000)
+- 🤖 **Civic AI Chatbot Endpoint**: [http://localhost:8000/api/chat](http://localhost:8000/api/chat)
+- 📡 **Real-Time IoT & Weather Alerts Feed**: [http://localhost:8000/api/alerts](http://localhost:8000/api/alerts)
+- 🛠️ **Municipal Work Orders Dispatch**: [http://localhost:8000/api/work-orders](http://localhost:8000/api/work-orders)
+- 📑 **Executive Audit Dossier & KPI Report**: [http://localhost:8000/api/reports/executive-summary](http://localhost:8000/api/reports/executive-summary)
 - 🔮 **Future City Readiness Engine**: [http://localhost:8000/api/readiness](http://localhost:8000/api/readiness)
 - 📖 **Interactive Swagger API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
 - 📑 **ReDoc API Documentation**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
@@ -23,6 +27,7 @@ When running locally, access the system through these endpoints:
 - 📊 **City Analytics KPI Endpoint**: [http://localhost:8000/api/statistics](http://localhost:8000/api/statistics)
 
 ---
+
 
 ## 🚀 Key Features
 
