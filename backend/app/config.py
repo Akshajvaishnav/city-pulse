@@ -31,4 +31,10 @@ class Settings:
     AI_DETECTION_MODE: str = os.getenv("AI_DETECTION_MODE", "mock")  # "mock" or "yolo"
     YOLO_MODEL_PATH: str = os.getenv("YOLO_MODEL_PATH", "models/yolov8_infrastructure.pt")
 
+    # LLM Assistant Settings
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+    LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "hybrid")  # hybrid, openai, gemini, or builtin
+
 settings = Settings()
+

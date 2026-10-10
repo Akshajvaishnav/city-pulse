@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import Toast from './components/Toast';
 import IssueDetailsModal from './components/IssueDetailsModal';
 import StatusUpdateModal from './components/StatusUpdateModal';
+import CivicChatbotModal from './components/CivicChatbotModal';
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -79,7 +80,9 @@ function MainApp() {
       {/* Global Modals & Notifications */}
       <IssueDetailsModal />
       <StatusUpdateModal />
+      <CivicChatbotModal setActiveTab={setActiveTab} />
       <Toast />
+
 
       {/* Footer */}
       <Footer setActiveTab={setActiveTab} />

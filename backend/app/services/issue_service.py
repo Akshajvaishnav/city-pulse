@@ -125,6 +125,79 @@ def delete_issue(db: Session, issue_id: int) -> bool:
     db.commit()
     return True
 
+def upvote_issue(db: Session, issue_id: int) -> Optional[InfrastructureIssue]:
+    issue = get_issue_by_id(db, issue_id)
+    if not issue:
+        return None
+    issue.upvotes = (issue.upvotes or 0) + 1
+    db.commit()
+    db.refresh(issue)
+    return issue
+
+def add_issue_comment(db: Session, issue_id: int, author: str, comment_text: str, is_official: bool = False):
+    from ..models import IssueComment
+    issue = get_issue_by_id(db, issue_id)
+    if not issue:
+        return None
+    new_comment = IssueComment(
+        issue_id=issue_id,
+        author_name=author,
+        is_official=is_official,
+        comment=comment_text,
+        created_at=datetime.utcnow()
+    )
+    db.add(new_comment)
+    db.commit()
+    db.refresh(new_comment)
+    return new_comment
+
+def create_or_update_work_order(db: Session, issue_id: int, data: Dict[str, Any]):
+    from ..models import WorkOrder
+    issue = get_issue_by_id(db, issue_id)
+    if not issue:
+        return None
+    
+    wo = db.query(WorkOrder).filter(WorkOrder.issue_id == issue_id).first()
+    if not wo:
+        count = db.query(WorkOrder).count() + 1
+        order_id = f"WO-{datetime.utcnow().year}-{count:04d}"
+        wo = WorkOrder(
+            order_id=order_id,
+            issue_id=issue_id,
+            crew_assigned=data.get("crew_assigned", "Rapid Highway Response Unit A"),
+            priority=data.get("priority", issue.severity or "High"),
+            estimated_cost=data.get("estimated_cost", 18500.0),
+            estimated_completion_days=data.get("estimated_completion_days", 2),
+            equipment_required=data.get("equipment_required", "Bitumen compactor, traffic cones"),
+            work_status=data.get("work_status", "Assigned"),
+            notes=data.get("notes", "Auto-dispatched via municipal AI engine."),
+            created_at=datetime.utcnow()
+        )
+        db.add(wo)
+        # Also move issue to In Progress if currently Pending
+        if issue.status in ["Pending", "Verified"]:
+            issue.status = "In Progress"
+            status_entry = StatusHistory(
+                issue_id=issue.id,
+                old_status=issue.status,
+                new_status="In Progress",
+                changed_by="AI Maintenance Dispatch",
+                notes=f"Work Order {order_id} generated. Dispatched to {wo.crew_assigned}.",
+                timestamp=datetime.utcnow()
+            )
+            db.add(status_entry)
+    else:
+        for k, v in data.items():
+            if v is not None and hasattr(wo, k):
+                setattr(wo, k, v)
+        if data.get("work_status") == "Completed":
+            issue.status = "Resolved"
+            issue.resolution_notes = "Resolved by crew: " + wo.crew_assigned
+
+    db.commit()
+    db.refresh(wo)
+    return wo
+
 def get_city_flaw_counts(db: Session) -> Dict[str, int]:
     counts = db.query(InfrastructureIssue.city, func.count(InfrastructureIssue.id))\
                .group_by(InfrastructureIssue.city).all()

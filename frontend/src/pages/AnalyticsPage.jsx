@@ -168,6 +168,24 @@ export default function AnalyticsPage() {
     window.print();
   };
 
+  const handleDownloadReport = async () => {
+    try {
+      const res = await fetch('http://localhost:8000/api/reports/executive-summary');
+      if (res.ok) {
+        const data = await res.json();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `CityPulse-Audit-Dossier-${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    } catch (e) {
+      console.error('Failed to download report', e);
+    }
+  };
+
   return (
     <div className="space-y-8 py-4">
       {/* Top Banner */}
@@ -182,14 +200,24 @@ export default function AnalyticsPage() {
           </h1>
         </div>
 
-        <button
-          onClick={handlePrint}
-          className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
-        >
-          <Printer className="w-4 h-4 text-cyan-400" />
-          <span>Print / Export Report</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleDownloadReport}
+            className="px-3.5 py-2 rounded-xl bg-cyan-950/70 hover:bg-cyan-900/60 text-cyan-300 border border-cyan-500/40 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md"
+          >
+            <Download className="w-4 h-4 text-cyan-400" />
+            <span>Download Audit Dossier</span>
+          </button>
+          <button
+            onClick={handlePrint}
+            className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer"
+          >
+            <Printer className="w-4 h-4 text-cyan-400" />
+            <span>Print Report</span>
+          </button>
+        </div>
       </div>
+
 
       {/* KPI Highlight Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -5,6 +5,7 @@ import StatusBadge from '../components/StatusBadge';
 import SeverityBadge from '../components/SeverityBadge';
 import DefectIcon from '../components/DefectIcon';
 import InfrastructureMap from '../components/InfrastructureMap';
+import SensorAlertsBanner from '../components/SensorAlertsBanner';
 import {
   Activity,
   Clock,
@@ -197,7 +198,11 @@ export default function DashboardPage({ setActiveTab }) {
         </div>
       </div>
 
+      {/* Real-time Environmental & Weather IoT Sensor Alerts */}
+      <SensorAlertsBanner />
+
       {/* Future City Readiness 2070 Teaser Card */}
+
       {activeCityReadiness && (
         <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-cyan-950/50 via-slate-900/90 to-blue-950/40 border border-cyan-500/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
           <div className="space-y-1">

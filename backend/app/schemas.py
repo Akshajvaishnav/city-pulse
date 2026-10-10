@@ -65,6 +65,95 @@ class IssueUpdate(BaseModel):
     status: Optional[str] = None
     resolution_notes: Optional[str] = None
 
+class CommentCreate(BaseModel):
+    author_name: Optional[str] = "Concerned Citizen"
+    is_official: bool = False
+    comment: str
+
+class CommentResponse(BaseModel):
+    id: int
+    issue_id: int
+    author_name: str
+    is_official: bool
+    comment: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class WorkOrderCreate(BaseModel):
+    crew_assigned: str
+    priority: str = "High"
+    estimated_cost: float = 15000.0
+    estimated_completion_days: int = 3
+    equipment_required: Optional[str] = "Pavement patcher, safety cones"
+    notes: Optional[str] = None
+
+class WorkOrderUpdate(BaseModel):
+    crew_assigned: Optional[str] = None
+    priority: Optional[str] = None
+    estimated_cost: Optional[float] = None
+    estimated_completion_days: Optional[int] = None
+    equipment_required: Optional[str] = None
+    work_status: Optional[str] = None
+    notes: Optional[str] = None
+
+class WorkOrderResponse(BaseModel):
+    id: int
+    order_id: str
+    issue_id: int
+    crew_assigned: str
+    priority: str
+    estimated_cost: float
+    estimated_completion_days: int
+    equipment_required: Optional[str] = None
+    work_status: str
+    scheduled_date: datetime
+    notes: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class CityAlertCreate(BaseModel):
+    city: str
+    category: str
+    level: str
+    title: str
+    detail: str
+    metric_value: Optional[str] = None
+    affected_zone: str
+
+class CityAlertResponse(BaseModel):
+    id: int
+    city: str
+    category: str
+    level: str
+    title: str
+    detail: str
+    metric_value: Optional[str] = None
+    affected_zone: str
+    is_active: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class ChatMessage(BaseModel):
+    role: str  # user, assistant, system
+    content: str
+
+class ChatRequest(BaseModel):
+    message: str
+    conversation_history: Optional[List[ChatMessage]] = []
+    city_context: Optional[str] = "Gurugram"
+
+class ChatResponse(BaseModel):
+    reply: str
+    suggested_actions: Optional[List[str]] = []
+    referenced_issues: Optional[List[str]] = []
+    provider: str = "CityPulse-LLM"
+
 class IssueResponse(BaseModel):
     id: int
     report_id: str
@@ -84,9 +173,12 @@ class IssueResponse(BaseModel):
     ai_detected: bool
     bounding_boxes_json: Optional[str] = None
     resolution_notes: Optional[str] = None
+    upvotes: int = 0
     created_at: datetime
     updated_at: datetime
     history: List[StatusHistoryResponse] = []
+    comments: List[CommentResponse] = []
+    work_order: Optional[WorkOrderResponse] = None
 
     class Config:
         from_attributes = True

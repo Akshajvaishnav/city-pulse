@@ -6,7 +6,7 @@ from pathlib import Path
 from .config import settings
 from .database import engine, Base, SessionLocal
 from .seed_data import seed_database
-from .api import detect, issues, statistics, auth, readiness
+from .api import detect, issues, statistics, auth, readiness, enhancements
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -40,6 +40,8 @@ app.include_router(detect.router, prefix=settings.API_PREFIX)
 app.include_router(issues.router, prefix=settings.API_PREFIX)
 app.include_router(statistics.router, prefix=settings.API_PREFIX)
 app.include_router(readiness.router, prefix=settings.API_PREFIX)
+app.include_router(enhancements.router, prefix=settings.API_PREFIX)
+
 
 @app.on_event("startup")
 def on_startup():
