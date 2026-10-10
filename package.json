@@ -1,0 +1,12 @@
+{
+  "name": "city-pulse",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SmartCity Multi-City Infrastructure Monitoring & Future City Readiness Platform",
+  "scripts": {
+    "backend": "npm run dev --prefix backend",
+    "frontend": "npm run dev --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend"
+  }
+}

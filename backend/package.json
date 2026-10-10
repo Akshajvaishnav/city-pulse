@@ -1,0 +1,9 @@
+{
+  "name": "city-pulse-backend",
+  "version": "1.0.0",
+  "description": "City Pulse Backend Server",
+  "scripts": {
+    "dev": "node start.js",
+    "start": "node start.js"
+  }
+}
